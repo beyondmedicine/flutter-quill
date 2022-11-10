@@ -81,6 +81,10 @@ enum MediaPickSetting {
 }
 
 class ImageVideoUtils {
+
+  static Future<MediaPickSetting?> selectLinkSetting(BuildContext context) =>
+      selectMediaPickSetting(context);
+
   static Future<MediaPickSetting?> selectMediaPickSetting(
     BuildContext context,
   ) =>
@@ -93,20 +97,20 @@ class ImageVideoUtils {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton.icon(
+                onPressed: () => Navigator.pop(ctx, MediaPickSetting.Gallery),
                 icon: const Icon(
                   Icons.collections,
                   color: Colors.orangeAccent,
                 ),
                 label: Text('Gallery'.i18n),
-                onPressed: () => Navigator.pop(ctx, MediaPickSetting.Gallery),
               ),
               TextButton.icon(
+                onPressed: () => Navigator.pop(ctx, MediaPickSetting.Link),
                 icon: const Icon(
                   Icons.link,
                   color: Colors.cyanAccent,
                 ),
                 label: Text('Link'.i18n),
-                onPressed: () => Navigator.pop(ctx, MediaPickSetting.Link),
               )
             ],
           ),

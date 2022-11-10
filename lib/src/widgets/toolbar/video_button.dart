@@ -63,7 +63,7 @@ class VideoButton extends StatelessWidget {
   Future<void> _onPressedHandler(BuildContext context) async {
     if (onVideoPickCallback != null) {
       final selector =
-          mediaPickSettingSelector ?? ImageVideoUtils.selectMediaPickSetting;
+          mediaPickSettingSelector ?? ImageVideoUtils.selectLinkSetting;
       final source = await selector(context);
       if (source != null) {
         if (source == MediaPickSetting.Gallery) {
@@ -97,6 +97,25 @@ class VideoButton extends StatelessWidget {
     if (value != null && value.isNotEmpty) {
       final index = controller.selection.baseOffset;
       final length = controller.selection.extentOffset - index;
+
+      final regex = [
+        RegExp(r'^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$'),
+        RegExp(r'^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([_\-a-zA-Z0-9]{11}).*$'),
+        RegExp(r'^https:\/\/youtu\.be\/([_\-a-zA-Z0-9]{11}).*$'),
+        RegExp(r'^https:\/\/(?:music\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$'),
+        RegExp(r'^https:\/\/(?:www\.|m\.)?youtube\.com\/shorts\/([_\-a-zA-Z0-9]{11}).*$'),
+      ];
+      final matches = regex.map((x) => x.firstMatch(value))
+          .whereType<Match>()
+          .where((x) => x.groupCount >= 1)
+          .map((x) => x.group(1))
+          .whereType<String>();
+
+      if (matches.isNotEmpty) {
+        final url = 'https://www.youtube.com/embed/${matches.first}';
+        controller.replaceText(index, length, BlockEmbed.video(url), null);
+        return;
+      }
 
       controller.replaceText(index, length, BlockEmbed.video(value), null);
     }
