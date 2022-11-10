@@ -13,10 +13,12 @@ import '../controller.dart';
 import '../toolbar.dart';
 
 class LinkDialog extends StatefulWidget {
-  const LinkDialog({this.dialogTheme, this.link, Key? key}) : super(key: key);
+  const LinkDialog({this.dialogTheme, this.link, this.onlyYoutube, Key? key})
+      : super(key: key);
 
   final QuillDialogTheme? dialogTheme;
   final String? link;
+  final bool? onlyYoutube;
 
   @override
   LinkDialogState createState() => LinkDialogState();
@@ -52,7 +54,10 @@ class LinkDialogState extends State<LinkDialog> {
       actions: [
         TextButton(
           onPressed: _link.isNotEmpty &&
-                  AutoFormatMultipleLinksRule.linkRegExp.hasMatch(_link)
+              ((widget.onlyYoutube ?? false)
+                  ? AutoFormatMultipleLinksRule.youtubeRegExpList
+                      .any((x) => x.hasMatch(_link))
+                  : AutoFormatMultipleLinksRule.linkRegExp.hasMatch(_link))
               ? _applyLink
               : null,
           child: Text(

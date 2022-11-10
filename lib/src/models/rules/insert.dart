@@ -334,6 +334,17 @@ class AutoFormatMultipleLinksRule extends InsertRule {
       r'(https?:\/\/|www\.)[\w-\.]+\.[\w-\.]+(\/([\S]+)?)?';
   static final linkRegExp = RegExp(_linkPattern);
 
+  static const Iterable<String> _youtubePatternList = [
+      r'^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$',
+      r'^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([_\-a-zA-Z0-9]{11}).*$',
+      r'^https:\/\/youtu\.be\/([_\-a-zA-Z0-9]{11}).*$',
+      r'^https:\/\/(?:music\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$',
+      r'^https:\/\/(?:www\.|m\.)?youtube\.com\/shorts\/([_\-a-zA-Z0-9]{11}).*$',
+  ];
+
+  static final Iterable<RegExp> youtubeRegExpList = _youtubePatternList
+      .map((x) => RegExp(x));
+
   @override
   Delta? applyRule(
     Delta document,
