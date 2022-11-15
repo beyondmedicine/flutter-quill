@@ -61,7 +61,24 @@ Image imageByUrl(String imageUrl,
 
   if (imageUrl.startsWith('http')) {
     return Image.network(imageUrl,
-        width: width, height: height, alignment: alignment);
+        width: width, height: height, alignment: alignment,
+        loadingBuilder: (_, child, event) {
+          if (event is ImageChunkEvent) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: CircularProgressIndicator(
+                  value: event.expectedTotalBytes is int
+                      ? event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 0)
+                      : null,
+                ),
+              ),
+            );
+          }
+
+          return child;
+        },
+    );
   }
   return Image.file(io.File(imageUrl),
       width: width, height: height, alignment: alignment);

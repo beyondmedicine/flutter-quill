@@ -55,13 +55,16 @@ Widget defaultEmbedBuilder(BuildContext context, QuillController controller,
         image = imageByUrl(imageUrl);
         _widthHeight = Tuple2((image as Image).width, image.height);
       }
-
-      if (!readOnly || !isMobile() || isImageBase64(imageUrl)) {
-        return image;
+      if (!readOnly && isMobile()) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: image,
+        );
       }
 
-      // We provide option menu for mobile platform excluding base64 image
-      return _menuOptionsForReadonlyImage(context, imageUrl, image);
+      return image;
     case BlockEmbed.videoType:
       final videoUrl = node.value.data;
       if (videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be')) {
