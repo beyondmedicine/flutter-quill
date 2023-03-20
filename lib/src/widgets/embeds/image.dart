@@ -62,6 +62,7 @@ Image imageByUrl(String imageUrl,
   if (imageUrl.startsWith('http')) {
     return Image.network(imageUrl,
         width: width, height: height, alignment: alignment,
+        fit: BoxFit.cover,
         loadingBuilder: (_, child, event) {
           if (event is ImageChunkEvent) {
             return Center(

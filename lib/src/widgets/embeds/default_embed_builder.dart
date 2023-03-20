@@ -16,8 +16,7 @@ import 'image_resizer.dart';
 import 'video_app.dart';
 import 'youtube_video_app.dart';
 
-Widget defaultEmbedBuilder(BuildContext context, QuillController controller,
-    leaf.Embed node, bool readOnly) {
+Widget defaultEmbedBuilder(BuildContext context, QuillController controller, leaf.Embed node, bool readOnly) {
   assert(!kIsWeb, 'Please provide EmbedBuilder for Web');
 
   Tuple2<double?, double?>? _widthHeight;
@@ -27,33 +26,32 @@ Widget defaultEmbedBuilder(BuildContext context, QuillController controller,
       var image;
       final style = node.style.attributes['style'];
       if (isMobile() && style != null) {
-        final _attrs = parseKeyValuePairs(style.value.toString(), {
-          Attribute.mobileWidth,
-          Attribute.mobileHeight,
-          Attribute.mobileMargin,
-          Attribute.mobileAlignment
-        });
+        final _attrs = parseKeyValuePairs(
+            style.value.toString(), {Attribute.mobileWidth, Attribute.mobileHeight, Attribute.mobileMargin, Attribute.mobileAlignment});
         if (_attrs.isNotEmpty) {
-          assert(
-              _attrs[Attribute.mobileWidth] != null &&
-                  _attrs[Attribute.mobileHeight] != null,
-              'mobileWidth and mobileHeight must be specified');
+          assert(_attrs[Attribute.mobileWidth] != null && _attrs[Attribute.mobileHeight] != null, 'mobileWidth and mobileHeight must be specified');
           final w = double.parse(_attrs[Attribute.mobileWidth]!);
           final h = double.parse(_attrs[Attribute.mobileHeight]!);
           _widthHeight = Tuple2(w, h);
-          final m = _attrs[Attribute.mobileMargin] == null
-              ? 0.0
-              : double.parse(_attrs[Attribute.mobileMargin]!);
+          final m = _attrs[Attribute.mobileMargin] == null ? 0.0 : double.parse(_attrs[Attribute.mobileMargin]!);
           final a = getAlignment(_attrs[Attribute.mobileAlignment]);
           image = Padding(
-              padding: EdgeInsets.all(m),
-              child: imageByUrl(imageUrl, width: w, height: h, alignment: a));
+            padding: EdgeInsets.all(m),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: imageByUrl(imageUrl, width: w, height: h, alignment: a),
+            ),
+          );
         }
       }
 
       if (_widthHeight == null) {
         image = imageByUrl(imageUrl);
         _widthHeight = Tuple2((image as Image).width, image.height);
+        image = ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: imageByUrl(imageUrl),
+        );
       }
       if (!readOnly && isMobile()) {
         return GestureDetector(
@@ -68,8 +66,7 @@ Widget defaultEmbedBuilder(BuildContext context, QuillController controller,
     case BlockEmbed.videoType:
       final videoUrl = node.value.data;
       if (videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be')) {
-        return YoutubeVideoApp(
-            videoUrl: videoUrl, context: context, readOnly: readOnly);
+        return YoutubeVideoApp(videoUrl: videoUrl, context: context, readOnly: readOnly);
       }
       return VideoApp(videoUrl: videoUrl, context: context, readOnly: readOnly);
     default:
@@ -81,8 +78,7 @@ Widget defaultEmbedBuilder(BuildContext context, QuillController controller,
   }
 }
 
-Widget _menuOptionsForReadonlyImage(
-    BuildContext context, String imageUrl, Widget image) {
+Widget _menuOptionsForReadonlyImage(BuildContext context, String imageUrl, Widget image) {
   return GestureDetector(
       onTap: () {
         showDialog(
@@ -95,8 +91,7 @@ Widget _menuOptionsForReadonlyImage(
                 onPressed: () {
                   imageUrl = appendFileExtensionToImageUrl(imageUrl);
                   GallerySaver.saveImage(imageUrl).then((_) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text('Saved'.i18n)));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved'.i18n)));
                     Navigator.pop(context);
                   });
                 },
@@ -106,19 +101,13 @@ Widget _menuOptionsForReadonlyImage(
                 color: Colors.cyanAccent,
                 text: 'Zoom'.i18n,
                 onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ImageTapWrapper(imageUrl: imageUrl)));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ImageTapWrapper(imageUrl: imageUrl)));
                 },
               );
               return Padding(
                 padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
                 child: SimpleDialog(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    children: [saveOption, zoomOption]),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))), children: [saveOption, zoomOption]),
               );
             });
       },
@@ -126,13 +115,7 @@ Widget _menuOptionsForReadonlyImage(
 }
 
 class _SimpleDialogItem extends StatelessWidget {
-  const _SimpleDialogItem(
-      {required this.icon,
-      required this.color,
-      required this.text,
-      required this.onPressed,
-      Key? key})
-      : super(key: key);
+  const _SimpleDialogItem({required this.icon, required this.color, required this.text, required this.onPressed, Key? key}) : super(key: key);
 
   final IconData icon;
   final Color color;
@@ -148,8 +131,7 @@ class _SimpleDialogItem extends StatelessWidget {
           Icon(icon, size: 36, color: color),
           Padding(
             padding: const EdgeInsetsDirectional.only(start: 16),
-            child:
-                Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
